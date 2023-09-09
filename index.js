@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 
+app.use(express.json())
+
 const PORT = 3001
 
 let persons = [
@@ -26,6 +28,10 @@ let persons = [
     }
 ]
 
+function id() {
+    return Math.floor(Math.random() * 1000000)
+}
+
 app.get('/api/persons', (request, response) => {
     response.json(persons)
 })
@@ -36,8 +42,43 @@ app.get('/api/persons/:id', (request, response) => {
     if (person) {
         response.json(person)
     } else {
-        response.status(404).send(`No person with id ${id} found`).end()
+        response
+            .status(404)
+            .json({ error: `No person with id ${id} found` })
     }
+})
+
+app.post('/api/persons', (request, response) => {
+    const body = request.body
+
+    if (!body) {
+        return response.status(400).json({
+            error: 'body missing'
+        })
+    }
+
+    if (!body.name) {
+        return response.status(400).json({
+            error: 'name missing'
+        })
+    }
+
+    if (!body.number) {
+        return response.status(400).json({
+            error: 'number missing'
+        })
+    }
+
+    const person = {
+        id: id(),
+        name: body.name,
+        number: body.number,
+    }
+
+    console.log(person);
+    persons = persons.concat(person)
+
+    response.status(201).json(person)
 })
 
 app.delete('/api/persons/:id', (request, response) => {
