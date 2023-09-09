@@ -3,9 +3,17 @@ var morgan = require('morgan')
 
 const app = express()
 
+morgan.token('body', req => {
+    if (req.method === 'POST') {
+        return JSON.stringify(req.body)
+    }
+})
+
+
+const morganConfig = morgan(':method :url :status :res[content-length] :response-time ms :body')
 
 app.use(express.json())
-app.use(morgan('tiny'))
+app.use(morganConfig)
 
 const PORT = 3001
 
