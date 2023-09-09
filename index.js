@@ -30,6 +30,16 @@ app.get('/api/persons', (request, response) => {
     response.json(persons)
 })
 
+app.get('/api/persons/:id', (request, response) => {
+    const id = request.params.id
+    const person = persons.find(person => person.id == id)
+    if (person) {
+        response.json(person)
+    } else {
+        response.status(404).send(`No person with id ${id} found`).end()
+    }
+})
+
 app.get('/info', (request, response) => {
     const info = `Phonebook has info for ${persons.length} people`
     const timestamp = new Date()
