@@ -1,13 +1,16 @@
+require('dotenv').config()
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
+const mongoose = require('mongoose')
+const Person = require('./model/person')
 
 const app = express()
 
+// middleware
 app.use(express.json())
 app.use(cors())
 app.use(express.static('dist'))
-
 morgan.token('body', req => {
     if (req.method === 'POST') {
         return JSON.stringify(req.body)
@@ -15,37 +18,12 @@ morgan.token('body', req => {
 })
 app.use(morgan(':method :url :status :res[content-length] :response-time ms :body'))
 
-const PORT = process.env.PORT || 3001
-
-let persons = [
-    {
-        id: 1,
-        name: "Arto Hellas",
-        number: "040-123456"
-    },
-    {
-        id: 2,
-        name: "Ada Lovelace",
-        number: "39-44-5323523"
-    },
-    {
-        id: 3,
-        name: "Dan Abramov",
-        number: "12-43-234345"
-    },
-    {
-        id: 4,
-        name: "Mary Poppendieck",
-        number: "39-23-6423122"
-    }
-]
-
-function id() {
-    return Math.floor(Math.random() * 1000000)
-}
-
+// routes
 app.get('/api/persons', (request, response) => {
-    response.json(persons)
+    Person.find({}).then(result => {
+        response.json(result)
+        mongoose.connection.close()
+    })
 })
 
 app.get('/api/persons/:id', (request, response) => {
@@ -104,6 +82,11 @@ app.get('/info', (request, response) => {
     )
 })
 
+function id() {
+    return Math.floor(Math.random() * 1000000)
+}
+
+const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`)
 })
