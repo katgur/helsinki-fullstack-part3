@@ -8,15 +8,15 @@ const Person = require('./model/person')
 const app = express()
 
 // middleware
-app.use(express.json())
-app.use(cors())
-app.use(express.static('dist'))
 morgan.token('body', req => {
     if (req.method === 'POST') {
         return JSON.stringify(req.body)
     }
 })
 app.use(morgan(':method :url :status :res[content-length] :response-time ms :body'))
+app.use(express.json())
+app.use(cors())
+app.use(express.static('dist'))
 
 // routes
 app.get('/api/persons', (request, response) => {
@@ -71,11 +71,17 @@ app.post('/api/persons', (request, response) => {
         })
 })
 
-// app.delete('/api/persons/:id', (request, response) => {
-//     const id = request.params.id
-//     persons = persons.filter(person => person.id != id)
-//     response.status(204).end()
-// })
+app.delete('/api/persons/:id', (request, response) => {
+    const id = request.params.id
+    Person.findByIdAndRemove(id)
+        .then(result => {
+            response.status(204).end()
+        })
+        .catch(error => {
+            console.log('error deleting person: ', error.message)
+            response.status(500).end()
+        })
+})
 
 // app.get('/info', (request, response) => {
 //     const info = `Phonebook has info for ${persons.length} people`
