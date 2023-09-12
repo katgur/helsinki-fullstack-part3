@@ -20,23 +20,31 @@ app.use(express.static('dist'))
 
 // routes
 app.get('/api/persons', (request, response) => {
-    Person.find({}).then(result => {
-        response.json(result)
-        mongoose.connection.close()
-    })
+    Person.find({})
+        .then(result => {
+            response.json(result)
+            mongoose.connection.close()
+        })
+        .catch(error => {
+            console.log('error getting persons: ', error.message)
+            response.status(500).end()
+        })
 })
 
-// app.get('/api/persons/:id', (request, response) => {
-//     const id = request.params.id
-//     const person = persons.find(person => person.id == id)
-//     if (person) {
-//         response.json(person)
-//     } else {
-//         response
-//             .status(404)
-//             .json({ error: `No person with id ${id} found` })
-//     }
-// })
+app.get('/api/persons/:id', (request, response) => {
+    Person.findById(request.params.id)
+        .then(result => {
+            if (result) {
+                response.json(result)
+            } else {
+                response.status(404).end()
+            }
+        })
+        .catch(error => {
+            console.log('error getting person: ', error.message)
+            response.status(500).end()
+        })
+})
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
@@ -85,7 +93,7 @@ app.put('/api/persons/:id', (request, response) => {
     if (!body.number) {
         return response.status(400).json({ error: 'number missing' })
     }
-    
+
     const person = {
         name: body.name,
         number: body.number,
@@ -117,13 +125,20 @@ app.delete('/api/persons/:id', (request, response) => {
         })
 })
 
-// app.get('/info', (request, response) => {
-//     const info = `Phonebook has info for ${persons.length} people`
-//     const timestamp = new Date()
-//     response.send(
-//         `<div>${info}<br/>${timestamp}</div>`
-//     )
-// })
+app.get('/info', (request, response) => {
+    Person.count({})
+        .then(result => {
+            const info = `Phonebook has info for ${result} people`
+            const timestamp = new Date()
+            response.send(
+                `<div>${info}<br/>${timestamp}</div>`
+            )
+        })
+        .catch(error => {
+            console.log('error getting count of persons: ', error.message)
+            response.status(500).end()
+        })
+})
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
