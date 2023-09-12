@@ -26,17 +26,17 @@ app.get('/api/persons', (request, response) => {
     })
 })
 
-app.get('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    const person = persons.find(person => person.id == id)
-    if (person) {
-        response.json(person)
-    } else {
-        response
-            .status(404)
-            .json({ error: `No person with id ${id} found` })
-    }
-})
+// app.get('/api/persons/:id', (request, response) => {
+//     const id = request.params.id
+//     const person = persons.find(person => person.id == id)
+//     if (person) {
+//         response.json(person)
+//     } else {
+//         response
+//             .status(404)
+//             .json({ error: `No person with id ${id} found` })
+//     }
+// })
 
 app.post('/api/persons', (request, response) => {
     const body = request.body
@@ -53,38 +53,37 @@ app.post('/api/persons', (request, response) => {
         return response.status(400).json({ error: 'number missing' })
     }
 
-    if (persons.find(person => person.name === body.name)) {
-        return response.status(400).json({ error: 'name must be unique' })
-    }
+    const name = body.number
+    const number = body.number
 
-    const person = {
-        id: id(),
-        name: body.name,
-        number: body.number,
-    }
+    const person = new Person({
+        name: name,
+        number: number,
+    })
 
-    persons = persons.concat(person)
-
-    response.status(201).json(person)
+    person.save()
+        .then(result => {
+            response.status(201).json(person)
+        })
+        .catch(error => {
+            console.log('error saving person: ', error.message)
+            response.status(500).end()
+        })
 })
 
-app.delete('/api/persons/:id', (request, response) => {
-    const id = request.params.id
-    persons = persons.filter(person => person.id != id)
-    response.status(204).end()
-})
+// app.delete('/api/persons/:id', (request, response) => {
+//     const id = request.params.id
+//     persons = persons.filter(person => person.id != id)
+//     response.status(204).end()
+// })
 
-app.get('/info', (request, response) => {
-    const info = `Phonebook has info for ${persons.length} people`
-    const timestamp = new Date()
-    response.send(
-        `<div>${info}<br/>${timestamp}</div>`
-    )
-})
-
-function id() {
-    return Math.floor(Math.random() * 1000000)
-}
+// app.get('/info', (request, response) => {
+//     const info = `Phonebook has info for ${persons.length} people`
+//     const timestamp = new Date()
+//     response.send(
+//         `<div>${info}<br/>${timestamp}</div>`
+//     )
+// })
 
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
