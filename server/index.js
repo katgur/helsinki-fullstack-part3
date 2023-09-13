@@ -41,14 +41,9 @@ app.get('/api/persons/:id', (request, response, next) => {
 })
 
 app.post('/api/persons', (request, response, next) => {
-    const body = request.body
-
-    const name = body.number
-    const number = body.number
-
     const person = new Person({
-        name: name,
-        number: number,
+        name: request.body.name,
+        number: request.body.number,
     })
 
     person.save()
@@ -59,11 +54,9 @@ app.post('/api/persons', (request, response, next) => {
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
-    const body = request.body
-
     const person = {
-        name: body.name,
-        number: body.number,
+        name: request.body.name,
+        number: request.body.number,
     }
 
     Person.findByIdAndUpdate(request.params.id, person, { new: true, runValidators: true, context: 'query' })
