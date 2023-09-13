@@ -36,9 +36,13 @@ const App = () => {
             reset()
           })
           .catch(error => {
-            showMessage(`Person '${data.name}' was already removed from server`, 'error')
-            const newPersons = persons.filter(person => person.id !== persons[sameIndex].id)
-            setPersons(newPersons)
+            if (error.response.status === 404) {
+              showMessage(`Person '${data.name}' was already removed from server`, 'error')
+              const newPersons = persons.filter(person => person.id !== persons[sameIndex].id)
+              setPersons(newPersons)
+            } else {
+              showMessage(error.response.data.error, 'error')
+            }
           })
       }
     } else {
@@ -47,6 +51,9 @@ const App = () => {
           showMessage(`Person '${data.name}' is successfully added`, 'success')
           setPersons([...persons, data])
           reset()
+        })
+        .catch(error => {
+          showMessage(error.response.data.error, 'error')
         })
     }
   }
