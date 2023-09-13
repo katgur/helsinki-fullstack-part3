@@ -7,6 +7,8 @@
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
+    "fix": "eslint . --fix",
+    "lint": "eslint .",
     "deploy": "git push origin main",
     "build:ui": "@powershell Remove-Item -Recurse -Force dist && cd ../client && npm run build && @powershell Copy-Item dist -Recurse ../server",
     "deploy:full": "npm run build:ui && git add . && git commit -m uibuild && git push"
@@ -29,6 +31,8 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "eslint": "^8.49.0",
+    "eslint-plugin-react": "^7.33.2",
     "nodemon": "^3.0.1"
   }
 }
