@@ -19,3 +19,13 @@ body {
 input {
     all: unset;
 }
+
+.success {
+    @apply bg-green-100;
+    @apply  border-l-green-700;
+}
+
+.error {
+    @apply bg-red-100;
+    @apply  border-l-red-700;
+}
