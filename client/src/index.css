@@ -1,19 +1,21 @@
-.error {
-    color: red;
-    background: lightgrey;
-    font-size: 20px;
-    border-style: solid;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+    --foreground-rgb: theme('colors.white');
+    --background-start-rgb: theme('colors.stone.900');
+    --background-end-rgb: theme('colors.stone.800');
 }
 
-.success {
-    color: green;
-    background: lightgrey;
-    font-size: 20px;
-    border-style: solid;
-    border-radius: 5px;
-    padding: 10px;
-    margin-bottom: 10px;
+body {
+    color: var(--foreground-rgb);
+    background: linear-gradient(to bottom,
+            transparent,
+            var(--background-end-rgb)) var(--background-start-rgb);
+    height: 100vh;
+}
+
+input {
+    all: unset;
 }

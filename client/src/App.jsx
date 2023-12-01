@@ -70,13 +70,13 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h2>Phonebook</h2>
+    <div className='mx-[auto] p-4 md:w-1/2'>
+      <h1 className='text-3xl font-bold text-white'>Phonebook</h1>
       <Alert message={message} />
-      <Filter search={search} setSearch={setSearch} />
-      <h3>Add a new person</h3>
+      <h2 className='mt-8 text-xl font-bold text-white'>Add a new person</h2>
       <PersonForm onSubmit={onAddNewPersonClick} />
-      <h3>Numbers</h3>
+      <h2 className='mt-8 text-xl font-bold text-white'>Numbers</h2>
+      <Filter search={search} setSearch={setSearch} />
       <Persons persons={persons} search={search} onDeleteButtonClick={onDeleteButtonClick} />
     </div>
   )
