@@ -1,19 +1,20 @@
 const personsRouter = require('express').Router()
 const Person = require('../model/person')
 
-personsRouter.get('/', (request, response, next) => {
-  Person.find({})
-    .then(result => {
-      response.json(result)
-    })
-    .catch(error => next(error))
+personsRouter.get('/', async (request, response) => {
+  const result = await Person.find({ author: request.user.id })
+  response.json(result)
 })
 
 personsRouter.get('/:id', (request, response, next) => {
   Person.findById(request.params.id)
     .then(result => {
       if (result) {
-        response.json(result)
+        if (person.author.toString() !== request.user.id.toString()) {
+          response.json(result)
+        } else {
+          response.status(403).end()
+        }
       } else {
         response.status(404).end()
       }
@@ -25,6 +26,7 @@ personsRouter.post('/', (request, response, next) => {
   const person = new Person({
     name: request.body.name,
     number: request.body.number,
+    author: request.user.id,
   })
 
   person.save()
@@ -34,30 +36,34 @@ personsRouter.post('/', (request, response, next) => {
     .catch(error => next(error))
 })
 
-personsRouter.put('/:id', (request, response, next) => {
-  const person = {
+personsRouter.put('/:id', async (request, response, next) => {
+  const newPerson = {
     name: request.body.name,
     number: request.body.number,
   }
 
-  Person.findByIdAndUpdate(request.params.id, person, { new: true, runValidators: true, context: 'query' })
-    .then(result => {
-      if (result) {
-        response.json(result)
-      } else {
-        response.status(404).end()
-      }
-    })
-    .catch(error => next(error))
+  const person = await Person.findById(request.params.id)
+  if (!person) {
+    response.status(404).end()
+  }
+  if (person.author.toString() !== request.user.id.toString()) {
+    response.status(403).end()
+  }
+  const result = await Person.findByIdAndUpdate(request.params.id, newPerson, { new: true, runValidators: true, context: 'query' })
+  response.json(result)
 })
 
-personsRouter.delete('/:id', (request, response, next) => {
+personsRouter.delete('/:id', async (request, response, next) => {
   const id = request.params.id
-  Person.findByIdAndRemove(id)
-    .then(() => {
-      response.status(204).end()
-    })
-    .catch(error => next(error))
+  const person = await Person.findById(id)
+  if (!person) {
+    response.status(404).end()
+  }
+  if (person.author.toString() !== request.user.id.toString()) {
+    response.status(403).end()
+  }
+  await Person.findByIdAndRemove(id)
+  response.status(204).end()
 })
 
 module.exports = personsRouter

@@ -29,7 +29,7 @@ app.use(express.json())
 app.use(middleware.logger)
 app.use(middleware.tokenExtractor)
 
-app.use("/api/blogs", middleware.userExtractor, personsRouter)
+app.use("/api/persons", middleware.userExtractor, personsRouter)
 app.use("/api/users", userRouter)
 app.use("/api/login", authRouter)
 
