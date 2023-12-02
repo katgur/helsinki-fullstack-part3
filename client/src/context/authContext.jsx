@@ -1,11 +1,22 @@
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useReducer } from 'react'
 import { setToken } from '../service/persons'
 
 const AuthContext = createContext()
 const key = 'pb-token'
 
+const userReducer = (state, action) => {
+    switch (action.type) {
+        case "LOGIN":
+            return action.payload
+        case "LOGOUT":
+            return null
+        default:
+            return state
+    }
+}
+
 export const AuthContextProvider = ({ children }) => {
-    const [user, setUser] = useState(JSON.parse(localStorage.getItem(key)))
+    const [user, userDispatch] = useReducer(userReducer, JSON.parse(localStorage.getItem(key)))
 
     if (user) {
         localStorage.setItem(key, JSON.stringify(user))
@@ -13,7 +24,7 @@ export const AuthContextProvider = ({ children }) => {
     }
 
     return (
-        <AuthContext.Provider value={{ user, setUser }}>
+        <AuthContext.Provider value={{ user, userDispatch }}>
             {children}
         </AuthContext.Provider>
     )

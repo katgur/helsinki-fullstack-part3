@@ -4,13 +4,13 @@ import AuthContext from "../context/authContext"
 
 function LoginForm({ showMessage }) {
     const [loginData, setLoginData] = useState({ username: "", password: "" })
-    const { setUser } = useContext(AuthContext)
+    const { userDispatch } = useContext(AuthContext)
 
     const handleSubmit = (e) => {
         e.preventDefault()
         authService.login(loginData)
             .then(data => {
-                setUser(data)
+                userDispatch({ type: "LOGIN", payload: data })
             })
             .catch(e => {
                 showMessage(e.response.data.error, 'error')
