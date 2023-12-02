@@ -2,16 +2,6 @@ const mongoose = require('mongoose')
 
 mongoose.set('strictQuery', false)
 
-const url = process.env.MONGODB_URI
-
-mongoose.connect(url)
-  .then(() => {
-    console.log('connected to MongoDB succesfully')
-  })
-  .catch((error) => {
-    console.log('error while connecting to MongoDB:', error.message)
-  })
-
 const personSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -28,7 +18,11 @@ const personSchema = new mongoose.Schema({
       },
       message: props => `${props.value} is not a valid phone number`
     },
-  }
+  },
+ author: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User"
+  },
 })
 
 personSchema.set('toJSON', {

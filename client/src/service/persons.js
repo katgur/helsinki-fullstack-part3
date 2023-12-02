@@ -2,23 +2,40 @@ import axios from 'axios'
 
 const apiPath = '/api/persons'
 
+let token;
+export const setToken = (newToken) => {
+  token = `Bearer ${newToken}`
+}
+
 const getAll = () => {
-  const request = axios.get(apiPath)
+  const config = {
+    headers: { Authorization: token }
+  }
+  const request = axios.get(apiPath, config)
   return request.then(response => response.data)
 }
 
 const create = data => {
-  const request = axios.post(apiPath, data)
+  const config = {
+    headers: { Authorization: token }
+  }
+  const request = axios.post(apiPath, data, config)
   return request.then(response => response.data)
 }
 
 const update = (id, data) => {
-  const request = axios.put(`${apiPath}/${id}`, data)
+  const config = {
+    headers: { Authorization: token }
+  }
+  const request = axios.put(`${apiPath}/${id}`, data, config)
   return request.then(response => response.data)
 }
 
 const remove = id => {
-  const request = axios.delete(`${apiPath}/${id}`, id)
+  const config = {
+    headers: { Authorization: token }
+  }
+  const request = axios.delete(`${apiPath}/${id}`, config)
   return request.then(response => response.data)
 }
 
