@@ -1,6 +1,6 @@
 const morgan = require('morgan')
-const User = require('../model/user')
-const jwt = require('jsonwebtoken')
+const jwt = require("jsonwebtoken")
+const User = require("../model/user")
 
 morgan.token('body', req => {
     if (req.method === 'POST') {
@@ -9,9 +9,9 @@ morgan.token('body', req => {
 })
 
 const tokenExtractor = (request, response, next) => {
-    const authorization = request.get('authorization')
-    if (authorization && authorization.startsWith('Bearer ')) {
-        request.token = authorization.replace('Bearer ', '')
+    const authorization = request.get("authorization")
+    if (authorization && authorization.startsWith("Bearer ")) {
+        request.token = authorization.replace("Bearer ", "")
     }
     next()
 }
@@ -24,17 +24,17 @@ const userExtractor = async (request, response, next) => {
 }
 
 const unknownEndpoint = (request, response) => {
-    response.status(404).send({ error: 'unknown endpoint' })
+    response.status(404).send({ error: "unknown endpoint" })
 }
 
 const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
+    logger.error(error.message)
 
-    if (error.name === 'CastError') {
-        return response.status(400).send({ error: 'malformatted id' })
-    } else if (error.name === 'ValidationError') {
+    if (error.name === "CastError") {
+        return response.status(400).send({ error: "malformatted id" })
+    } else if (error.name === "ValidationError") {
         return response.status(400).json({ error: error.message })
-    } else if (error.name === 'JsonWebTokenError') {
+    } else if (error.name === "JsonWebTokenError") {
         return response.status(401).json({ error: error.message })
     }
 
@@ -43,8 +43,8 @@ const errorHandler = (error, request, response, next) => {
 
 module.exports = {
     logger: morgan(':method :url :status :res[content-length] :response-time ms :body'),
-    errorHandler,
     tokenExtractor,
     userExtractor,
     unknownEndpoint,
+    errorHandler
 }

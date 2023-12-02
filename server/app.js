@@ -1,44 +1,39 @@
-const express = require('express')
-const mongoose = require('mongoose')
-const cors = require('cors')
-const { errorHandler, logger, tokenExtractor, userExtractor, unknownEndpoint } = require('./util/middleware')
-const authRouter = require('./routes/auth')
-const usersRouter = require('./routes/users')
-const personsRouter = require('./routes/persons')
+const config = require("./util/config")
+const express = require("express")
+require("express-async-errors")
+const cors = require("cors")
+const personsRouter = require("./routes/persons")
+const userRouter = require("./routes/users")
+const authRouter = require("./routes/auth")
+const middleware = require("./util/middleware")
+const mongoose = require("mongoose")
 
 const app = express()
 
-const url = require('./util/config').MONGODB_URI
-mongoose.connect(url)
+mongoose.set("strictQuery", false)
+
+console.log("Connecting to MongoDB")
+
+mongoose
+    .connect(config.MONGODB_URI)
     .then(() => {
-        console.log('connected to MongoDB succesfully')
+        console.log("Connected to MongoDB")
     })
     .catch((error) => {
-        console.log('error while connecting to MongoDB:', error.message)
+        console.log("Error connecting to MongoDB:", error.message)
     })
 
-app.use(express.json())
 app.use(cors())
-app.use(express.static('dist'))
-app.use(logger)
-app.use(tokenExtractor)
+app.use(express.static("dist"))
+app.use(express.json())
+app.use(middleware.logger)
+app.use(middleware.tokenExtractor)
 
-app.use('/api/users', usersRouter)
-app.use('/api/login', authRouter)
-app.use('/api/persons', userExtractor, personsRouter)
-app.get('/info', (request, response, next) => {
-    Person.count({})
-        .then(result => {
-            const info = `Phonebook has info for ${result} people`
-            const timestamp = new Date()
-            response.send(
-                `<div>${info}<br/>${timestamp}</div>`
-            )
-        })
-        .catch(error => next(error))
-})
+app.use("/api/blogs", middleware.userExtractor, personsRouter)
+app.use("/api/users", userRouter)
+app.use("/api/login", authRouter)
 
-app.use(unknownEndpoint)
-app.use(errorHandler)
+app.use(middleware.unknownEndpoint)
+app.use(middleware.errorHandler)
 
 module.exports = app
